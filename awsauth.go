@@ -201,6 +201,7 @@ var (
 		"elasticmapreduce":     4,
 		"elastictranscoder":    4,
 		"elasticache":          2,
+		"execute-api":          4,
 		"glacier":              4,
 		"kinesis":              4,
 		"redshift":             4,
