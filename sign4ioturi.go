@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-// Prints debug-information (
-var DEBUG_SignUrl bool = true
+// Prints debug-information (rather verbose)
+var DEBUG_SignUrl bool = false
 
 //TODO: consider a SignUrl(), e.g.: higher level for this function and SignS3Url()
 // But... SignS3Url wants a http.Request, which is not meaningful for IoT-Data wss://... URIs
