@@ -37,6 +37,38 @@ func Sign(request *http.Request, credentials ...Credentials) *http.Request {
 	return nil
 }
 
+// SignCustomAPI signs a request to API Gateway behind a custom domain with
+// Signed Signature Version 4.
+func SignCustomAPI(request *http.Request, region string, credentials ...Credentials) *http.Request {
+	keys := chooseKeys(credentials)
+
+	// Add the X-Amz-Security-Token header when using STS
+	if keys.SecurityToken != "" {
+		request.Header.Set("X-Amz-Security-Token", keys.SecurityToken)
+	}
+
+	prepareRequestV4(request)
+
+	meta := &metadata{
+		service: "execute-api",
+		region:  region,
+	}
+
+	// Task 1
+	hashedCanonReq := hashedCanonicalRequestV4(request, meta)
+
+	// Task 2
+	stringToSign := stringToSignV4(request, hashedCanonReq, meta)
+
+	// Task 3
+	signingKey := signingKeyV4(keys.SecretAccessKey, meta.date, meta.region, meta.service)
+	signature := signatureV4(signingKey, stringToSign)
+
+	request.Header.Set("Authorization", buildAuthHeaderV4(signature, meta, keys))
+
+	return request
+}
+
 // Sign4 signs a request with Signed Signature Version 4.
 func Sign4(request *http.Request, credentials ...Credentials) *http.Request {
 	keys := chooseKeys(credentials)
